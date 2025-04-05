@@ -2,6 +2,7 @@ export enum MessageType {
   REQUEST = 'REQUEST',
   RESPONSE = 'RESPONSE',
   SCRIPT_HOST_FUNCTION_REQUEST = 'SCRIPT_HOST_FUNCTION_REQUEST',
+  SCRIPT_HISTORY_FUNCTION_REQUEST = 'SCRIPT_HISTORY_FUNCTION_REQUEST',
 }
 
 export enum ResponseStatus {
@@ -46,12 +47,18 @@ export interface DevServerScriptHostFunctionRequest extends GasScriptData {
   args: unknown[];
 }
 
+export interface DevServerScriptHistoryFunctionRequest extends GasScriptData {
+  type: MessageType.SCRIPT_HISTORY_FUNCTION_REQUEST;
+  functionName: string;
+  args: unknown[];
+}
+
 export interface DevServerContentWindow<Origin extends OriginType> extends Window {
   postMessage: {
     (
       message: Origin extends OriginType.GAS
         ? DevServerResponse
-        : DevServerRequest | DevServerScriptHostFunctionRequest,
+        : DevServerRequest | DevServerScriptHostFunctionRequest | DevServerScriptHistoryFunctionRequest,
       targetOrigin: string,
       transfer?: Transferable[]
     ): void;

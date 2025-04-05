@@ -50,6 +50,7 @@ describe('production gas-client server', () => {
         host: {
           editor: {},
         },
+        history: {},
       },
     };
 
@@ -64,6 +65,11 @@ describe('production gas-client server', () => {
   test('should contain scriptHostFunctions property', () => {
     const server = new GASClient();
     expect(server).toHaveProperty('scriptHostFunctions');
+  });
+
+  test('should contain scriptHistoryFunctions property', () => {
+    const server = new GASClient();
+    expect(server).toHaveProperty('scriptHistoryFunctions');
   });
 
   // use existence of window.gasStore to determine if in development mode
@@ -154,6 +160,33 @@ describe('production gas-client server', () => {
     // The focusEditor property should exist but be undefined
     expect(server.scriptHostFunctions).toHaveProperty('focusEditor', undefined);
   });
+
+  test('should call google.script.history.push in production', () => {
+    global.google.script.history.push = jest.fn();
+
+    const server = new GASClient();
+    server.scriptHistoryFunctions.push();
+
+    expect(global.google.script.history.push).toHaveBeenCalled();
+  });
+
+  test('should call google.script.history.replace in production', () => {
+    global.google.script.history.replace = jest.fn();
+
+    const server = new GASClient();
+    server.scriptHistoryFunctions.replace();
+
+    expect(global.google.script.history.replace).toHaveBeenCalled();
+  });
+
+  test('should call google.script.history.setChangeHandler in production', () => {
+    global.google.script.history.setChangeHandler = jest.fn();
+
+    const server = new GASClient();
+    server.scriptHistoryFunctions.setChangeHandler();
+
+    expect(global.google.script.history.setChangeHandler).toHaveBeenCalled();
+  });
 });
 describe('local development gas-client server', () => {
   const eventHandlersStore = [];
@@ -185,7 +218,13 @@ describe('local development gas-client server', () => {
 
   test('should contain scriptHostFunctions property', () => {
     const server = new GASClient();
+    console.log(server);
     expect(server).toHaveProperty('scriptHostFunctions');
+  });
+
+  test('should contain scriptHistoryFunctions property', () => {
+    const server = new GASClient();    
+    expect(server).toHaveProperty('scriptHistoryFunctions');
   });
 
   describe('when set up properly', () => {
@@ -535,6 +574,65 @@ describe('local development gas-client server', () => {
             args: [100],
             functionName: 'setWidth',
             type: 'SCRIPT_HOST_FUNCTION_REQUEST',
+          }),
+          '*'
+        );
+      });
+    });
+
+    describe('script history functions', () => {
+      test('should post push message to window.parent in development', () => {
+        const mockPostMessage = jest.fn();
+        window.parent.postMessage = mockPostMessage;
+
+        const server = new GASClient();
+        server.scriptHistoryFunctions.push();
+
+        expect(Object.entries(window.gasStore).length).toEqual(0);
+
+        expect(mockPostMessage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: [],
+            functionName: 'push',
+            type: 'SCRIPT_HISTORY_FUNCTION_REQUEST',
+          }),
+          '*'
+        );
+      });
+
+      test('should use enum exports to push message to window.parent in development', () => {
+        const mockPostMessage = jest.fn();
+        window.parent.postMessage = mockPostMessage;
+
+        const server = new GASClient();
+        server.scriptHistoryFunctions.push();
+
+        expect(Object.entries(window.gasStore).length).toEqual(0);
+
+        expect(mockPostMessage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: [],
+            functionName: 'push',
+            type: MessageType.SCRIPT_HISTORY_FUNCTION_REQUEST,
+          }),
+          '*'
+        );
+      });
+
+      test('should post replace message to window.parent in development', () => {
+        const mockPostMessage = jest.fn();
+        window.parent.postMessage = mockPostMessage;
+
+        const server = new GASClient();
+        server.scriptHistoryFunctions.replace({test: "test"});
+
+        expect(Object.entries(window.gasStore).length).toEqual(0);
+
+        expect(mockPostMessage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: [{test: "test"}],
+            functionName: 'replace',
+            type: 'SCRIPT_HISTORY_FUNCTION_REQUEST',
           }),
           '*'
         );

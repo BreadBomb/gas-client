@@ -37,11 +37,11 @@ declare namespace google {
       /**
        * An object of key/value pairs that correspond to the URL request parameters. Only the first value will be returned for parameters that have multiple values. If no parameters are present, this will be an empty object.
        */
-      parameter: { [key: string]: unknown };
+      parameter: { [key: string]: string };
       /**
        * An object similar to location.parameter, but with an array of values for each key. If no parameters are present, this will be an empty object.
        */
-      parameters: { [key: string]: unknown[] };
+      parameters: { [key: string]: string[] };
     }
 
     /**
@@ -53,6 +53,11 @@ declare namespace google {
      * google.script.history is an asynchronous client-side JavaScript API that can interact with the browser history stack. It can only be used in the context of a web app that uses IFRAME.
      */
     namespace history {
+      type State = object | null;
+      interface Query {
+          [key: string]: string | readonly string[];
+      }
+
       /**
        * Pushes the provided state object, URL parameters and URL fragment onto the browser history stack.
        * @param stateObject An developer-defined object to be associated with a browser history event, and which resurfaces when the state is popped. Typically used to store application state information (such as page data) for future retrieval.
@@ -71,7 +76,7 @@ declare namespace google {
        * Sets a callback function to respond to changes in the browser history. The callback function should take only a single event object as an argument.
        * @param callback a client-side callback function to run upon a history change event, using the event object as the only argument.
        */
-      function setChangeHandler(callback: (event: { state: unknown; location: IUrlLocation }) => void): void;
+      function setChangeHandler(callback: (event: { state: State; location: IUrlLocation }) => void): void;
     }
 
     namespace host {

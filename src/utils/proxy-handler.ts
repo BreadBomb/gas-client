@@ -38,4 +38,17 @@ const proxyHandlerScriptHostFunction = (target: unknown, functionName: string): 
   };
 };
 
-export { proxyHandlerServerFunction, proxyHandlerScriptHostFunction };
+const proxyHandlerScriptHistoryFunction = (target: unknown, functionName: string): ((...args: unknown[]) => void) => {
+  return (...args: unknown[]) => {
+    window.parent.postMessage(
+      {
+        type: MessageType.SCRIPT_HISTORY_FUNCTION_REQUEST,
+        functionName,
+        args: [...args],
+      },
+      '*'
+    );
+  };
+};
+
+export { proxyHandlerServerFunction, proxyHandlerScriptHostFunction, proxyHandlerScriptHistoryFunction };
