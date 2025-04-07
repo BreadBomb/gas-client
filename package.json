@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "postinstall": "yarn build",
+    "postinstall": "yarn && yarn build",
     "prepack": "yarn build",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
