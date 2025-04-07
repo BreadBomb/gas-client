@@ -105,4 +105,4 @@ type HistoryFunctions = {
   setChangeHandler: (handler: (event: HistoryChangeEvent) => void) => void;
 }
 
-export { FunctionMap, ServerFunctions, HostFunctions, HistoryFunctions };
+export { FunctionMap, ServerFunctions, HostFunctions, HistoryFunctions, State, Query };

@@ -116,6 +116,38 @@ See reference here: https://developers.google.com/apps-script/guides/html/refere
 
 In production, these functions call the native Google Apps Script host methods directly. In development mode, they dispatch appropriate messages to the parent iframe. See section below on how to set up the parent iframe.
 
+### Using the scriptHistoryFunction
+
+The `GASClient` also provides a `scriptHistoryFunction` property that gives you access to Google's script history functions, which allow you to control :
+
+```javascript
+import { GASClient } from 'gas-client';
+const { scriptHostFunctions } = new GASClient();
+
+// Close the current dialog or sidebar
+scriptHostFunctions.close();
+
+// Set the height of the current dialog (in pixels)
+scriptHostFunctions.setHeight(500);
+
+// Set the width of the current dialog (in pixels)
+scriptHostFunctions.setWidth(400);
+
+// Switch focus from dialog/sidebar to the editor
+scriptHostFunctions.focusEditor(); // calls google.script.host.editor.focus()
+```
+
+These functions provide the same functionality as the corresponding methods in `google.script.host` but work in both production and development environments:
+
+- `close()`: Closes the current dialog or sidebar
+- `setHeight(height)`: Sets the height of the current dialog (in pixels)
+- `setWidth(width)`: Sets the width of the current dialog (in pixels)
+- `focusEditor()`: Switches browser focus from the dialog or sidebar to the Google Docs, Sheets, or Forms editor
+
+See reference here: https://developers.google.com/apps-script/guides/html/reference/host
+
+In production, these functions call the native Google Apps Script host methods directly. In development mode, they dispatch appropriate messages to the parent iframe. See section below on how to set up the parent iframe.
+
 ## Setting up the dev server wrapper
 
 Use the [React-Google-Apps-Script](https://github.com/enuchi/React-Google-Apps-Script/) project to get started. Or reference the [dev server wrapper](https://github.com/enuchi/React-Google-Apps-Script/blob/main/dev/dev-server-wrapper.html#L40-L41) on how to set up the parent wrapper to work with `gas-client`.

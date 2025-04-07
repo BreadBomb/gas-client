@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { AppWindow, MessageType } from '../types/dev-server';
+import { AppWindow, LocationChangeHandlerCallback, MessageType } from '../types/dev-server';
 
 declare const window: AppWindow;
 
@@ -40,6 +40,17 @@ const proxyHandlerScriptHostFunction = (target: unknown, functionName: string): 
 
 const proxyHandlerScriptHistoryFunction = (target: unknown, functionName: string): ((...args: unknown[]) => void) => {
   return (...args: unknown[]) => {
+
+    if (functionName === "setChangeHandler") {
+      console.log("set change handler");
+      
+      window.locationChangeHandler = args[0] as LocationChangeHandlerCallback;
+      return;
+    }
+
+    console.log(functionName, [...args]);
+    
+
     window.parent.postMessage(
       {
         type: MessageType.SCRIPT_HISTORY_FUNCTION_REQUEST,

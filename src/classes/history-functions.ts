@@ -9,7 +9,7 @@ class ScriptHistoryFunctions extends ScriptHistoryProvider {
 
   private initializeScriptHostFunctions(): void {
     this._historyFunctions = {
-      push: google.script.history.push,
+      push:  google.script.history.push,
       replace: google.script.history.replace,
       setChangeHandler: google.script.history.setChangeHandler,
     };

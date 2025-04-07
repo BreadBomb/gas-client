@@ -1,8 +1,11 @@
+import { State } from "./functions";
+
 export enum MessageType {
   REQUEST = 'REQUEST',
   RESPONSE = 'RESPONSE',
   SCRIPT_HOST_FUNCTION_REQUEST = 'SCRIPT_HOST_FUNCTION_REQUEST',
   SCRIPT_HISTORY_FUNCTION_REQUEST = 'SCRIPT_HISTORY_FUNCTION_REQUEST',
+  SCRIPT_HISTORY_CHANGE_RESPONSE = 'SCRIPT_HISTORY_CHANGE_RESPONSE',
 }
 
 export enum ResponseStatus {
@@ -53,11 +56,16 @@ export interface DevServerScriptHistoryFunctionRequest extends GasScriptData {
   args: unknown[];
 }
 
+export interface DevServerScriptHistoryChangeResponse extends GasScriptData {
+  type: MessageType.SCRIPT_HISTORY_CHANGE_RESPONSE;
+  args: unknown[];
+}
+
 export interface DevServerContentWindow<Origin extends OriginType> extends Window {
   postMessage: {
     (
       message: Origin extends OriginType.GAS
-        ? DevServerResponse
+        ? DevServerResponse | DevServerScriptHistoryChangeResponse
         : DevServerRequest | DevServerScriptHostFunctionRequest | DevServerScriptHistoryFunctionRequest,
       targetOrigin: string,
       transfer?: Transferable[]
@@ -66,9 +74,12 @@ export interface DevServerContentWindow<Origin extends OriginType> extends Windo
   };
 }
 
+export type LocationChangeHandlerCallback = (event: { state: State; location: Location }) => void;
+
 export interface AppWindow extends Window {
   parent: DevServerContentWindow<OriginType.APP>;
   gasStore: GASStore;
+  locationChangeHandler: LocationChangeHandlerCallback
 }
 
 export interface DevServerRequestEvent extends MessageEvent {
